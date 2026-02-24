@@ -1,30 +1,44 @@
 import { useState } from "react";
 import type { villageBuilding, villageTask } from "../../models/village-building/village-building";
+
 interface CreateTaskProps {
-	createTask: (task: villageTask) => void,
+	createTask: (task: Partial<villageTask>) => void | Promise<void>,
 	building: villageBuilding
 }
-const CreateTask: React.FC<CreateTaskProps> = ({createTask, building}) => {
+const CreateTaskForm: React.FC<CreateTaskProps> = ({createTask, building}) => {
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
+	const [error, setError] = useState<string | null>(null);
 
-	const submitTask = () => {
-		if (name != "" && description != ""){
-			const villageTask: villageTask = {
-				name: name.trim(),
-				description: description.trim(),
-				complete: false,
-				creationDate: new Date(),
-				completionDate: null
-			}
-			createTask(villageTask)
+	const submitTask = async() => {
+		const trimmedName = name.trim();
+		const trimmedDescription = description.trim();
+		if(!trimmedName || !trimmedDescription) {
+			setError("Please fill out both fields");
+			return;
+		}
+
+		setError(null);
+
+		const newTask: Partial<villageTask> = {
+			Name: trimmedName,
+			Description: trimmedDescription,
+			BuildingID: building.ID
+		};
+		try{
+			await createTask(newTask);
+			setName("");
+			setDescription("");
+
+		} catch (error){
+			setError(`Failed to create task: ${error}`)
 		}
 	}
 
 	return (
 		<div className="flex items-center justify-start flex-col m-0 p-4 w-full h-full border border-black">
 			<div>
-				<div>{building.thumnailImgUrl}</div>
+				<div>{building.ThumnailImgUrl}</div>
 			</div>
 			<div>
 				<label
@@ -51,9 +65,10 @@ const CreateTask: React.FC<CreateTaskProps> = ({createTask, building}) => {
 						/>
 					</div>
 				</label>
+				{error && <p className="text-sm text-red-600">{error}</p>}
 				<button onClick={submitTask}>submit</button>
 			</div>
 		</div>
 	)
 }
-export default CreateTask;
+export default CreateTaskForm;

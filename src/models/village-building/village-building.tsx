@@ -1,15 +1,33 @@
 export interface villageBuilding {
-	name: string,
-	description: string,
-	matters: string[],
-	imgUrl: string,
-	thumnailImgUrl: string
+	ID: number,
+	Name: string,
+	Description: string,
+	Categories: buildingCategory[],
+	ImgUrl: string,
+	ThumnailImgUrl: string,
+	Tasks: villageTask[],
+	CreatedAt: Date,
+	UpdatedAt: Date,
+}
+
+export interface buildingCategory {
+	ID: number,
+	BuildingID: number,
+	Text: string,
+	CreatedAt: Date,
+	UpdatedAt: Date,
 }
 
 export interface villageTask {
-	name: string,
-	description: string,
-	complete: boolean,
-	creationDate: Date | null,
-	completionDate: Date | null
+	ID: number,
+	Name: string,
+	Description: string,
+	BuildingID: number,
+	Building: villageBuilding,
+	Complete: boolean,
+	CompletedAt: Date | null,
+	CreationDate: Date | null,
+	IsCompleted: boolean,
+	CreatedAt: Date,
+	UpdatedAt: Date,
 }
